@@ -34,7 +34,7 @@ jobs:
       uses: repo-sync/pull-request@v2
       with:
         source_branch: ""
-        destination_branch: "develop"
+        destination_branch: "main"
         pr_title: "Version up => ${{ steps.extract_version.outputs.branch }}(XXX)"
         pr_body: |
             ## マージ前
