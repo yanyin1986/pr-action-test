@@ -18,7 +18,7 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-      
+    
     - name: Extract version with v string
       shell: bash
       run: |
@@ -29,6 +29,21 @@ jobs:
         fi
       id: extract_version_with_v
 
+    - name: Echo all
+      shell: bash
+      run: |
+        echo ${{ steps.extract_version }}
+        echo ${{ steps.extract_version.outputs }}
+        echo ${{ steps.extract_version.outputs.branch }}
+        echo "======="
+        echo ${{ steps.extract_branch }}
+        echo ${{ steps.extract_branch.outputs }}
+        echo ${{ steps.extract_branch.outputs.branch }}
+        echo "======="
+        echo ${{ steps.extract_version_with_v }}
+        echo ${{ steps.extract_version_with_v.outputs }}
+        echo ${{ steps.extract_version_with_v.outputs.branch }}
+        
     - uses: actions/checkout@v2
     - name: version-up-pr
       uses: repo-sync/pull-request@v2
