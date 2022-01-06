@@ -9,18 +9,25 @@ jobs:
   pull-request:
     runs-on: ubuntu-latest
     steps:
-    - name: Extract info
+    - name: Extract version number
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+      id: extract_version
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+      
+    - name: Extract version with v string
       shell: bash
       run: |
-        echo "##[set-output name=version;]$(echo ${GITHUB_REF##*/})"
-        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        
-        if [[ $version = onerec* ]]; then
-          echo "##[set-output name=version_with_v;]$(echo $version)"
+        if [[ ${{ steps.extract_version.outputs.branch }} = onerec* ]]; then
+          echo "##[set-output name=branch;]$(echo ${{ steps.extract_version.outputs.branch }})"
         else
-          echo "##[set-output name=version_with_v;]$(echo v$version)"
+          echo "##[set-output name=branch;]$(echo v${{ steps.extract_version.outputs.branch }})"
         fi
-      id: extract
+      id: extract_version_with_v
     - name: Echo all
       shell: bash
       run: |
