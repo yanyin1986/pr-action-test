@@ -15,10 +15,20 @@ jobs:
         echo "##[set-output name=version;]$(echo ${GITHUB_REF##*/})"
         echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         
-        echo $version
-        echo $branch
+        if [[ $version = onerec* ]]; then
+          echo "##[set-output name=version_with_v;]$(echo $version)"
+        else
+          echo "##[set-output name=version_with_v;]$(echo v$version)"
+        fi
       id: extract
-    
+    - name: Echo all
+      shell: bash
+      run: |
+        echo "======="
+        echo ${{ steps.extract_version.outputs.version }}
+        echo ${{ steps.extract_version.outputs.branch }}
+        echo ${{ steps.extract_version.outputs.version_with_v }}
+        echo "======="
     - uses: actions/checkout@v2
     - name: version-up-pr
       uses: repo-sync/pull-request@v2
