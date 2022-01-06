@@ -32,9 +32,9 @@ jobs:
       shell: bash
       run: |
         echo "======="
-        echo ${{ steps.extract_version.outputs.version }}
         echo ${{ steps.extract_version.outputs.branch }}
-        echo ${{ steps.extract_version.outputs.version_with_v }}
+        echo ${{ steps.extract_branch.outputs.branch }}
+        echo ${{ steps.extract_version_with_v.outputs.branch }}
         echo "======="
     - uses: actions/checkout@v2
     - name: version-up-pr
