@@ -1,0 +1,51 @@
+name: version_up_pr
+
+on:
+  push:
+    branches:
+    - "version/*"
+    
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract version number
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+      id: extract_version
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+      
+    - name: Extract version with v string
+      shell: bash
+      run: |
+        if [[ ${{ steps.extract_version.outputs.branch }} = onerec* ]]; then
+          echo ${{ steps.extract_version.outputs.branch }}
+        else
+          echo v${{ steps.extract_version.outputs.branch }}
+        fi
+      id: extract_version_with_v
+
+    - uses: actions/checkout@v2
+    - name: version-up-pr
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: ""
+        destination_branch: "develop"
+        pr_title: "Version up => ${{ steps.extract_version.outputs.branch }}(XXX)"
+        pr_body: |
+            ## マージ前
+            - [ ] Release note のチェック https://github.com/KARASTA/karasta-ios/releases/tag/untagged-
+            ## マージ後
+            - [ ] ${{ steps.extract_version_with_v.outputs.branch }} のタグを公開する https://github.com/KARASTA/karasta-ios/releases/tag/untagged-
+            ## 次の日
+            - [ ] ${{ steps.extract_version_with_v.outputs.branch }}　から新しいクラッシュがないか [Crashlytics](https://console.firebase.google.com/project/karasta-app/crashlytics/app/ios:jp.co.mixi.karasta/issues?state=open&time=last-seven-days&type=crash) で確認
+        pr_reviewer: "yanyin1986"
+        pr_assignee: "yanyin1986"
+        pr_label: "version_up"
+        pr_milestone: "${{ steps.extract_version_with_v.outputs.branch }}"
+        pr_allow_empty: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
